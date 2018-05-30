@@ -1,0 +1,53 @@
+using gold.**
+
+
+procedure main(args:String[]) begin
+   P = createAutomaton()
+	 testAutomaton(P)
+end
+  
+      
+
+procedure testAutomaton(M:ITransducer) begin
+	var sc:java.util.Scanner(System.$in)
+	while true do
+		print "----------------------------"
+		print "Digite la cadena de entrada:"
+		string:=sc.nextLine()+" "   //Se le agrega un espacio al final para marcar el final de la entrada. El espacio también es un separador.
+		result:=M.acceptsString(string)    
+		tokenStream := M.getOutputString()
+		print "La cadena fue aceptada "+(result?"aceptada":"rechazada")+". Resultado: "+tokenStream 
+	  
+	end
+end 
+
+ 
+
+  
+function createAutomaton():ITransducer begin
+	// Analizador léxico: Recibe una cadena de  letras minúsculas,  dígitos, paréntesis y epacios.
+	// genera uns acena de paréntesis, suma,asterostico,ves y enes
+	
+	Q:= {"a","b"}
+	
+	Σ:=('a'‥'b')  
+	Out:=Σ 
+	q₀:="a"
+	F:= {"b"}
+	return 	GDeterministicTransducer(Q,Σ,Out,q₀,F,δ,g,h)
+end
+
+function δ(q,σ) begin
+	if σ='a' then return "a" else return "b" end	
+end 
+
+
+
+function g(q) begin
+	return q
+end
+
+function h(q,σ) begin
+ return  λ
+
+end
