@@ -140,11 +140,13 @@ function createTransducer():ITransducer begin
 	Q:= {"I","Id", "p", "p_" ,"p_r", "p_re", "p_red", "f", "fi", "fin", "fin_", "fin_r", "fin_re", "fin_red", "c",
 		"ca", "cap", "capa", "capac", "capaci", "capacid", "capacida", "capacidad", "capacidad:", "capacidad:=", "capacidad:= ", "m", "ma", "mar", "marc", 
 		"marca", "marcac", "marcaci", "marcacio", "marcacion", "marcacion_", "marcacion_i", "marcacion_i:", "marcacion_i:=", "t",
-		 "tr", "tra", "tran", "trans", "transi", "transic", "transici", "transicio", "transicion",
-		"v", "va", "var", "Nom", "s", "si", "sit", "siti", "sitio", "sitio:", "=", "Num", "Err"}
+		 "tr", "tra", "tran", "trans", "transi", "transic", "transici", "transicio", "transicion", "transicion ", "transicion (", "e", "ex", "exp", "expo", "expon",
+		 "expone", "exponen", "exponenc", "exponenci", "exponencia", "exponencial", "exponencial,","d", "de", "det", "dete", "deter",
+		 "determ", "determi", "determin", "determini", "determinis", "determinist", "deterministi", "deterministic", "deterministico", "deterministico,",
+		"v", "va", "var", "Nom", "Nom,", "s", "si", "sit", "siti", "sitio", "sitio:", "a", "ar", "arc", "arco", "arco ", "arco (", "param1", "param1,", "param1, ", "", "=", "Num", "Num,", "Err", "(", ")"}
 	
-	Σ:=('a' ‥ 'z')∪('0' ‥ '9')∪{'_', ' ', '=', ':', '+'}
-	Out:={'P','n','F','V', 'S', 'C', 'I', 'Q', 'T', '=','#',':'} 
+	Σ:=('a' ‥ 'z')∪('0' ‥ '9')∪{'_', ' ', '=', ':', '+','-',',','(',')','/','*'}
+	Out:={'P','n','F','V', 'S', 'C', 'I', 'Q', 'T', 'X', 'D', 'A', '=','#',':',',','(',')'} 
 	q₀:="I"
 	F:= {"I"}
 	return 	GDeterministicTransducer(Q,Σ,Out,q₀,F,δ,g,h)
@@ -153,12 +155,29 @@ end
 function δ(q,σ) begin
 	if (q = "Err") then return "Err"
 	elseif q="I" and σ='=' then return "="
+	elseif q="I" and σ='(' then return "("
+	elseif q="(" and σ=' ' then return "Nom"
+	
+	elseif q="I" and σ=')' then return ")"
 	
    elseif q="I" and σ='p' then return "p"
    elseif q="p" and σ='_' then return "p_"
    	elseif q="p_" and σ='r' then return "p_r"
    	elseif q="p_r" and σ='e' then return "p_re"
    	elseif q="p_re" and σ='d' then return "p_red"
+   		
+   	elseif q="I" and σ='a' then return "a"
+   elseif q="a" and σ='r' then return "ar"
+   	elseif q="ar" and σ='c' then return "arc"
+   	elseif q="arc" and σ='o' then return "arco"
+   	elseif q="arco" and σ=' ' then return "arco "
+   	elseif q="arco " and σ='(' then return "arco ("
+   	elseif q="arco (" and σ=' ' then return "param1"
+   	elseif q="param1" and σ ∈ ('a' ‥ 'z')∪('0' ‥ '9') then return "param1"
+	elseif q="param1" and σ ∈ {','} then return "param1,"
+	elseif q="param1," and σ=' ' then return "param1, "
+	elseif q="param1, " and σ ∈ ('a' ‥ 'z') then return "param1"
+	elseif q="param1, " and σ ∈ ('0' ‥ '9') then return "Num"
    	
    	elseif q="I" and σ='c' then return "c"
    elseif q="c" and σ='a' then return "ca"
@@ -207,6 +226,39 @@ function δ(q,σ) begin
 	elseif q="transic" and σ='i' then return "transici"
 	elseif q="transici" and σ='o' then return "transicio"
 	elseif q="transicio" and σ='n' then return "transicion"
+	elseif q="transicion" and σ=' ' then return "transicion "
+	elseif q="transicion " and σ='(' then return "transicion ("
+	elseif q="transicion (" and σ=' ' then return "Nom"
+	elseif q="transicion " and σ ∈ ('a' ‥ 'z') then return "Nom"
+		
+	elseif q="I" and σ='e' then return "e"
+	elseif q="e" and σ='x' then return "ex"
+	elseif q="ex" and σ='p' then return "exp"
+	elseif q="exp" and σ='o' then return "expo"
+	elseif q="expo" and σ='n' then return "expon"
+	elseif q="expon" and σ='e' then return "expone"
+	elseif q="expone" and σ='n' then return "exponen"
+	elseif q="exponen" and σ='c' then return "exponenc"
+	elseif q="exponenc" and σ='i' then return "exponenci"
+	elseif q="exponenci" and σ='a' then return "exponencia"
+	elseif q="exponencia" and σ='l' then return "exponencial"
+	elseif q="exponencial" and σ=',' then return "exponencial,"
+		
+	elseif q="I" and σ='d' then return "d"
+	elseif q="d" and σ='e' then return "de"
+	elseif q="de" and σ='t' then return "det"
+	elseif q="det" and σ='e' then return "dete"
+	elseif q="dete" and σ='r' then return "deter"
+	elseif q="deter" and σ='m' then return "determ"
+	elseif q="determ" and σ='i' then return "determi"
+	elseif q="determi" and σ='n' then return "determin"
+	elseif q="determin" and σ='i' then return "determini"
+	elseif q="determini" and σ='s' then return "determinis"
+	elseif q="determinis" and σ='t' then return "determinist"
+	elseif q="determinist" and σ='i' then return "deterministi"
+	elseif q="deterministi" and σ='c' then return "deterministic"
+	elseif q="deterministic" and σ='o' then return "deterministico"
+	elseif q="deterministico" and σ=',' then return "deterministico,"
    	
    	elseif q="I" and σ='f' then return "f"
 	elseif q="f" and σ='i' then return "fi"
@@ -219,12 +271,16 @@ function δ(q,σ) begin
 	elseif q="I" and σ='v' then return "v"
    elseif q="v" and σ='a' then return "va"
    	elseif q="va" and σ='r' then return "var"
+   	elseif q="var" and σ=' ' then return "Nom"
 
-	elseif q="I" and σ ∈ ('a' ‥ 'z') then return "Nom"
-	elseif q="Nom" and σ ∈ ('a' ‥ 'z')∪('0' ‥ '9')∪{'+'} then return "Nom"
+	elseif q="I" and σ ∈ ('a' ‥ 'z')∪{'/'} then return "Nom"
+	elseif q="Nom" and σ ∈ ('a' ‥ 'z')∪('0' ‥ '9')∪{'+','-','/','(',')'} then return "Nom"
+	elseif q="Nom" and σ ∈ {','} then return "Nom,"
 		
 	elseif q="I" and σ ∈ ('0' ‥ '9') then return "Num"
 	elseif q="Num" and σ ∈ ('0' ‥ '9') then return "Num"
+	elseif q="Num" and σ ∈ {'*'} then return "Nom"
+	elseif q="Num" and σ ∈ {','} then return "Num,"
 	
 	elseif	q="Num" and σ ∈ ('a' ‥ 'z') then return "Err"
 	
@@ -258,12 +314,22 @@ if q ∉ {"Err"} and σ ∈ {' '} then
       	elseif q=="capacidad" then return "C"+s
       	elseif q=="marcacion_i:=" then return "IQ"+s
       	elseif q=="transicion" then return "T"+s
+      	elseif q=="transicion (" then return "("+s
+      	elseif q=="exponencial," then return "X,"+s
+      	elseif q=="deterministico," then return "D,"+s
+      	elseif q=="arco (" then return "A("+s
+      	elseif q=="param1" then return "n"+s
+      	elseif q=="param1," then return "n,"+s
       	
       elseif q=="=" then return "="+s
+      	elseif q=="(" then return "("+s
+      	elseif q==")" then return ")"+s
       	
       	
       elseif q=="Nom" then return "n"+s
+      	elseif q=="Nom," then return "n,"+s
       	elseif q=="Num" then return "#"+s
+      	elseif q=="Num," then return "#,"+s
       else return s
       end
 else return  λ
