@@ -138,12 +138,13 @@ function createTransducer():ITransducer begin
 	// los demás nombres  los traduce  a v; las cadenas de digito s  a n.
 	
 	Q:= {"I","Id", "p", "p_" ,"p_r", "p_re", "p_red", "f", "fi", "fin", "fin_", "fin_r", "fin_re", "fin_red", "c",
-		"ca", "cap", "capa", "capac", "capaci", "capacid", "capacida", "capacidad", "capacidad:", "capacidad:=", "m", "ma", "mar", "marc", 
-		"marca", "marcac", "marcaci", "marcacio", "marcacion", "marcacion_", "marcacion_i", "marcacion_i:", "marcacion_i:=",
+		"ca", "cap", "capa", "capac", "capaci", "capacid", "capacida", "capacidad", "capacidad:", "capacidad:=", "capacidad:= ", "m", "ma", "mar", "marc", 
+		"marca", "marcac", "marcaci", "marcacio", "marcacion", "marcacion_", "marcacion_i", "marcacion_i:", "marcacion_i:=", "t",
+		 "tr", "tra", "tran", "trans", "transi", "transic", "transici", "transicio", "transicion",
 		"v", "va", "var", "Nom", "s", "si", "sit", "siti", "sitio", "sitio:", "=", "Num", "Err"}
 	
-	Σ:=('a' ‥ 'z')∪('0' ‥ '9')∪{'_', ' ', '=', ':'}
-	Out:={'P','n','F','V', 'S', 'C', 'I', 'Q', '=','#',':'} 
+	Σ:=('a' ‥ 'z')∪('0' ‥ '9')∪{'_', ' ', '=', ':', '+'}
+	Out:={'P','n','F','V', 'S', 'C', 'I', 'Q', 'T', '=','#',':'} 
 	q₀:="I"
 	F:= {"I"}
 	return 	GDeterministicTransducer(Q,Σ,Out,q₀,F,δ,g,h)
@@ -170,6 +171,9 @@ function δ(q,σ) begin
    	elseif q="capacida" and σ='d' then return "capacidad"
    	elseif q="capacidad" and σ=':' then return "capacidad:"
    	elseif q="capacidad:" and σ='=' then return "capacidad:="
+   	elseif q="capacidad:=" and σ=' ' then return "capacidad:= "
+   	elseif q="capacidad:= " and σ ∈ ('0' ‥ '9') then return "Num"
+   	elseif q="capacidad:= " and σ ∈ ('a' ‥ 'z') then return "Nom"
    		
    	elseif q="I" and σ='m' then return "m"
    elseif q="m" and σ='a' then return "ma"
@@ -193,7 +197,16 @@ function δ(q,σ) begin
 	elseif q="sitio" and σ=':' then return "sitio:"
 	elseif q="sitio:" and σ=' ' then return "Nom"
 	
-	
+	elseif q="I" and σ='t' then return "t"
+	elseif q="t" and σ='r' then return "tr"
+	elseif q="tr" and σ='a' then return "tra"
+	elseif q="tra" and σ='n' then return "tran"
+	elseif q="tran" and σ='s' then return "trans"
+	elseif q="trans" and σ='i' then return "transi"
+	elseif q="transi" and σ='c' then return "transic"
+	elseif q="transic" and σ='i' then return "transici"
+	elseif q="transici" and σ='o' then return "transicio"
+	elseif q="transicio" and σ='n' then return "transicion"
    	
    	elseif q="I" and σ='f' then return "f"
 	elseif q="f" and σ='i' then return "fi"
@@ -208,7 +221,7 @@ function δ(q,σ) begin
    	elseif q="va" and σ='r' then return "var"
 
 	elseif q="I" and σ ∈ ('a' ‥ 'z') then return "Nom"
-	elseif q="Nom" and σ ∈ ('a' ‥ 'z')∪('0' ‥ '9') then return "Nom"
+	elseif q="Nom" and σ ∈ ('a' ‥ 'z')∪('0' ‥ '9')∪{'+'} then return "Nom"
 		
 	elseif q="I" and σ ∈ ('0' ‥ '9') then return "Num"
 	elseif q="Num" and σ ∈ ('0' ‥ '9') then return "Num"
@@ -240,10 +253,13 @@ if q ∉ {"Err"} and σ ∈ {' '} then
       	elseif q=="sitio:" then return "S:"+s
       elseif q=="fin_red" then return "F"+s
       	elseif q=="var" then return "V"+s
+      		
       	elseif q=="capacidad:=" then return "CQ"+s
+      	elseif q=="capacidad" then return "C"+s
       	elseif q=="marcacion_i:=" then return "IQ"+s
+      	elseif q=="transicion" then return "T"+s
       	
-      	elseif q=="=" and σ==' ' then return "="+s
+      elseif q=="=" then return "="+s
       	
       	
       elseif q=="Nom" then return "n"+s
