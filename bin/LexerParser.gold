@@ -23,15 +23,17 @@ procedure main(args:String[]) begin
   
   if mode.charAt(0) ='1' then   
      print  "usando el parser que implemeta direcatmente la gramatica"
-     GAutomataFrame.show(Parser)
-     testParser(Lexer,Parser)
+     GAutomataFrame.show(Lexer)
+     //GAutomataFrame.show(Parser)
+     //testParser(Lexer,Parser)
    
    else 
      print  "usando el parser más eficaz"
     
-     	GAutomataFrame.show(Parser2)
+    	GAutomataFrame.show(Lexer)
+     	//GAutomataFrame.show(Parser2)
     
-     testParser(Lexer,Parser2)
+     //testParser(Lexer,Parser2)
     end  
     end
     
@@ -137,7 +139,7 @@ function createTransducer():ITransducer begin
 	
 	Q:= {"I","Id", "p", "p_" ,"p_r", "p_re", "p_red", "f", "fi", "fin", "fin_", "fin_r", "fin_re", "fin_red", "Nom","Err"}
 	
-	Σ:=('a' ‥ 'z')
+	Σ:=('a' ‥ 'z')∪{'_', ' '}
 	Out:={'P','n','F'} 
 	q₀:="I"
 	F:= {"I"}
@@ -146,17 +148,24 @@ end
 
 function δ(q,σ) begin
 	if (q = "Err") then return "Err"
-	elseif  σ ∈ {'(',')',' '} then return "I"
+	elseif  σ ∈ {' '} then return "I"
    elseif q="I" and σ='p' then return "p"
    elseif q="p" and σ='_' then return "p_"
    	elseif q="p_" and σ='r' then return "p_r"
    	elseif q="p_r" and σ='e' then return "p_re"
    	elseif q="p_re" and σ='d' then return "p_red"
+   		
+   	elseif q="I" and σ='f' then return "f"
+	elseif q="f" and σ='i' then return "fi"
+	elseif q="fi" and σ='n' then return "fin"
+	elseif q="fin" and σ='_' then return "fin_"
+	elseif q="fin_" and σ='r' then return "fin_r"
+	elseif q="fin_r" and σ='e' then return "fin_re"
+	elseif q="fin_re" and σ='d' then return "fin_red"
 
 	elseif q="I" and σ ∈ ('a' ‥ 'z') then return "Nom"
 	elseif q="Nom" and σ ∈ ('a' ‥ 'z') then return "Nom"
-		
-	elseif	q="Num" and σ ∈ ('0' ‥ '9') then return "Num"
+	
 	elseif	q="Num" and σ ∈ ('a' ‥ 'z') then return "Err"
 
 
@@ -174,15 +183,15 @@ function h(q,σ) begin
 var s: String
 s := λ
 
-if q ∉ {"Err"} and σ ∈ {'(',')',' '} then
+if q ∉ {"Err"} and σ ∈ {' '} then
 
 		if σ ∉ {' '} then  s=String.valueOf(σ) end
 
       if q=="I" then return s
-      elseif q=="plus" then return "+"+s 
-      elseif q=="times" then return "*"+s
-      elseif q=="Num" then return "n"+s
-      else return "v"+s
+      elseif q=="p_red" then return "P"+s 
+      elseif q=="fin_red" then return "F"+s
+      elseif q=="Nom" then return "n"+s
+      else return s
       end
 else return  λ
 

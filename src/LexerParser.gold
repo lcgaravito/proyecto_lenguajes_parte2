@@ -137,10 +137,13 @@ function createTransducer():ITransducer begin
 	// reconoce las sigueintes palabras reservadas:  plus y times que  traduce en y * resspectivamente
 	// los demás nombres  los traduce  a v; las cadenas de digito s  a n.
 	
-	Q:= {"I","Id", "p", "p_" ,"p_r", "p_re", "p_red", "f", "fi", "fin", "fin_", "fin_r", "fin_re", "fin_red", "Nom","Err"}
+	Q:= {"I","Id", "p", "p_" ,"p_r", "p_re", "p_red", "f", "fi", "fin", "fin_", "fin_r", "fin_re", "fin_red", "c",
+		"ca", "cap", "capa", "capac", "capaci", "capacid", "capacida", "capacidad", "capacidad:", "capacidad:=", "m", "ma", "mar", "marc", 
+		"marca", "marcac", "marcaci", "marcacio", "marcacion", "marcacion_", "marcacion_i", "marcacion_i:", "marcacion_i:=",
+		"v", "va", "var", "Nom", "s", "si", "sit", "siti", "sitio", "sitio:", "=", "Num", "Err"}
 	
-	Σ:=('a' ‥ 'z')∪{'_', ' '}
-	Out:={'P','n','F'} 
+	Σ:=('a' ‥ 'z')∪('0' ‥ '9')∪{'_', ' ', '=', ':'}
+	Out:={'P','n','F','V', 'S', 'C', 'I', 'Q', '=','#',':'} 
 	q₀:="I"
 	F:= {"I"}
 	return 	GDeterministicTransducer(Q,Σ,Out,q₀,F,δ,g,h)
@@ -148,13 +151,50 @@ end
 
 function δ(q,σ) begin
 	if (q = "Err") then return "Err"
-	elseif  σ ∈ {' '} then return "I"
+	elseif q="I" and σ='=' then return "="
+	
    elseif q="I" and σ='p' then return "p"
    elseif q="p" and σ='_' then return "p_"
    	elseif q="p_" and σ='r' then return "p_r"
    	elseif q="p_r" and σ='e' then return "p_re"
    	elseif q="p_re" and σ='d' then return "p_red"
+   	
+   	elseif q="I" and σ='c' then return "c"
+   elseif q="c" and σ='a' then return "ca"
+   	elseif q="ca" and σ='p' then return "cap"
+   	elseif q="cap" and σ='a' then return "capa"
+   	elseif q="capa" and σ='c' then return "capac"
+   elseif q="capac" and σ='i' then return "capaci"
+   elseif q="capaci" and σ='d' then return "capacid"
+   	elseif q="capacid" and σ='a' then return "capacida"
+   	elseif q="capacida" and σ='d' then return "capacidad"
+   	elseif q="capacidad" and σ=':' then return "capacidad:"
+   	elseif q="capacidad:" and σ='=' then return "capacidad:="
    		
+   	elseif q="I" and σ='m' then return "m"
+   elseif q="m" and σ='a' then return "ma"
+   elseif q="ma" and σ='r' then return "mar"
+   	elseif q="mar" and σ='c' then return "marc"
+   	elseif q="marc" and σ='a' then return "marca"
+   	elseif q="marca" and σ='c' then return "marcac"
+   elseif q="marcac" and σ='i' then return "marcaci"
+   elseif q="marcaci" and σ='o' then return "marcacio"
+   	elseif q="marcacio" and σ='n' then return "marcacion"
+   	elseif q="marcacion" and σ='_' then return "marcacion_"
+   	elseif q="marcacion_" and σ='i' then return "marcacion_i"
+   	elseif q="marcacion_i" and σ=':' then return "marcacion_i:"
+   	elseif q="marcacion_i:" and σ='=' then return "marcacion_i:="
+   	
+   	elseif q="I" and σ='s' then return "s"
+	elseif q="s" and σ='i' then return "si"
+	elseif q="si" and σ='t' then return "sit"
+	elseif q="sit" and σ='i' then return "siti"
+	elseif q="siti" and σ='o' then return "sitio"
+	elseif q="sitio" and σ=':' then return "sitio:"
+	elseif q="sitio:" and σ=' ' then return "Nom"
+	
+	
+   	
    	elseif q="I" and σ='f' then return "f"
 	elseif q="f" and σ='i' then return "fi"
 	elseif q="fi" and σ='n' then return "fin"
@@ -162,12 +202,20 @@ function δ(q,σ) begin
 	elseif q="fin_" and σ='r' then return "fin_r"
 	elseif q="fin_r" and σ='e' then return "fin_re"
 	elseif q="fin_re" and σ='d' then return "fin_red"
+		
+	elseif q="I" and σ='v' then return "v"
+   elseif q="v" and σ='a' then return "va"
+   	elseif q="va" and σ='r' then return "var"
 
 	elseif q="I" and σ ∈ ('a' ‥ 'z') then return "Nom"
-	elseif q="Nom" and σ ∈ ('a' ‥ 'z') then return "Nom"
+	elseif q="Nom" and σ ∈ ('a' ‥ 'z')∪('0' ‥ '9') then return "Nom"
+		
+	elseif q="I" and σ ∈ ('0' ‥ '9') then return "Num"
+	elseif q="Num" and σ ∈ ('0' ‥ '9') then return "Num"
 	
 	elseif	q="Num" and σ ∈ ('a' ‥ 'z') then return "Err"
-
+	
+	elseif  σ ∈ {' '} then return "I"
 
     else  return "Id"
     end	
@@ -188,9 +236,18 @@ if q ∉ {"Err"} and σ ∈ {' '} then
 		if σ ∉ {' '} then  s=String.valueOf(σ) end
 
       if q=="I" then return s
-      elseif q=="p_red" then return "P"+s 
+      elseif q=="p_red" then return "P"+s
+      	elseif q=="sitio:" then return "S:"+s
       elseif q=="fin_red" then return "F"+s
+      	elseif q=="var" then return "V"+s
+      	elseif q=="capacidad:=" then return "CQ"+s
+      	elseif q=="marcacion_i:=" then return "IQ"+s
+      	
+      	elseif q=="=" and σ==' ' then return "="+s
+      	
+      	
       elseif q=="Nom" then return "n"+s
+      	elseif q=="Num" then return "#"+s
       else return s
       end
 else return  λ
