@@ -39,3 +39,7 @@ Pn
 		A(n,n,#)
 		A(n,n,n)
 F
+
+---------------------
+
+PnVn=#Vn=#Vn=#Vn=#S:nCQnIQ#S:nCQnIQCS:nCQ#IQ#S:nCQ#IQ#S:nCQnIQ#T(n,X,n,(n)n)TnTnT(n,D,n)T(n,n,#,#)A(n,n,n)A(n,n,#)A(n,n)A(n,n,#)A(n,n,#)A(n,n,#)A(n,n,#)A(n,n,#)A(n,n,#)A(n,n,#)A(n,n,#)A(n,n,#)A(n,n,n)F

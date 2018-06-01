@@ -14,27 +14,11 @@ procedure main(args:String[]) begin
 	Parser2 = createAutomaton2()
 	Parser = createAutomaton()  //  PDA de tres estados, que implementa diretamente la gramática
    stdin= java.util.Scanner(System.$in)
-   print "Desea usar el parser  que implementa directamente la gramatica (1 para SI)"
-  var mode:String
-  mode := stdin.nextLine()
-     
-  // GAutomataFrame.show(Lexer)
-   
-  
-  if mode.charAt(0) ='1' then   
-     print  "usando el parser que implemeta direcatmente la gramatica"
-     GAutomataFrame.show(Lexer)
-     //GAutomataFrame.show(Parser)
-     //testParser(Lexer,Parser)
-   
-   else 
-     print  "usando el parser más eficaz"
-    
-    	GAutomataFrame.show(Lexer)
-     	//GAutomataFrame.show(Parser2)
-    
-     //testParser(Lexer,Parser2)
-    end  
+   print  "Inicializando el lexer y el parser..."
+  	GAutomataFrame.show(Lexer)
+    GAutomataFrame.show(Parser)
+    testParser(Lexer,Parser)
+
     end
     
     
@@ -72,29 +56,47 @@ function createAutomaton():IPushdownAutomaton begin
 	//  E ->  (*L)
 	//  L ->  E
 	//  L ->  L E
-	
-	
-	Terms := {'(',')','+','*','v','n'}
-	NonTerms := {'E','L'}
-	Q:={"I","q","F"}
-	Σ:=Terms
-	Γ:=Terms ∪ NonTerms ∪ { '$'} 
+	Q:={"I","A","B","C","D","E","L","G","H","I","J","K","M","N","F"}
+	Σ:={'P','n','V','=','#','S',':','C','I','Q','T','(',')','X','D',',','A','F'}
+	Γ:={'P','S','C','I','T','(','A'} 
 	q₀:="I"
 	F:={"F"}
 	M:=GPushdownAutomaton(Q,Σ,Γ,q₀,F)
 	
-	M.delta("I","q","").push("$E")
-	M.delta("q","F","").pop("$")
-	
-	for each x in {'(',')','+','*','v','n'} do
-	  M.delta("q","q",""+x).pop(""+x)
-	end
-	M.delta("q","q","").changeTop("E","v")
-	M.delta("q","q","").changeTop("E","n")
-	M.delta("q","q","").changeTop("E",")L+(")
-	M.delta("q","q","").changeTop("E",")L*(")
-	M.delta("q","q","").changeTop("L","E")
-	M.delta("q","q","").changeTop("L","EL")
+	M.delta("I","A","P").push("P")
+	M.delta("A","B","n").ignore()
+	M.delta("B","B","Vn=#").ignore()
+	M.delta("B","C","").ignore()
+	M.delta("C","D","S:n").push("S")
+	M.delta("D","E","IQ").push("I")
+	M.delta("D","L","CQ").push("C")
+	M.delta("E","M","n").pop("I")
+	M.delta("E","M","#").pop("I")
+	M.delta("E","M","C").pop("I")
+	M.delta("L","M","n").pop("C")
+	M.delta("L","M","#").pop("C")
+	M.delta("M","C","").pop("S")
+	M.delta("C","G","T").push("T")
+	M.delta("G","C","n").pop("T")
+	M.delta("G","H","(").push("(")
+	M.delta("H","G","T").ignore()
+	M.delta("H","H","(").push("(")
+	M.delta("H","H",")").pop("(")
+	M.delta("H","H","n").ignore()
+	M.delta("H","H","#").ignore()
+	M.delta("H","H",",").ignore()
+	M.delta("H","H","X").ignore()
+	M.delta("H","H","D").ignore()
+	M.delta("H","N","A").changeTop("T","A")
+	M.delta("N","J","(").push("(")
+	M.delta("J","N","A").ignore()
+	M.delta("J","J",")").pop("(")
+	M.delta("J","J","n").ignore()
+	M.delta("J","J","#").ignore()
+	M.delta("J","J",",").ignore()
+	M.delta("J","K","F").pop("A")
+	M.delta("K","F","").pop("P")
+
 return M
 end
 
